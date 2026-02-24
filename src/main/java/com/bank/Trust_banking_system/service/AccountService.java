@@ -6,12 +6,12 @@ import com.bank.Trust_banking_system.entity.User;
 import com.bank.Trust_banking_system.repository.AccountRepository;
 import com.bank.Trust_banking_system.repository.TransactionRepository;
 import com.bank.Trust_banking_system.repository.UserRepository;
-import jakarta.transaction.Transactional;
+
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -32,11 +32,10 @@ public class AccountService {
         this.emailService = emailService;
     }
 
-    // 🔹 CREATE ACCOUNT
+    // CREATE ACCOUNT
     public Account createAccount(Long userId,
                                  String accountType,
-                                 String branchName,
-                                 String ifscCode) {
+                                 String branchName) {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -45,7 +44,6 @@ public class AccountService {
                 .accountNumber(UUID.randomUUID().toString())
                 .accountType(accountType)
                 .branchName(branchName)
-                .ifscCode(ifscCode)
                 .balance(BigDecimal.ZERO)
                 .createdAt(LocalDateTime.now())
                 .user(user)
@@ -54,76 +52,78 @@ public class AccountService {
         return accountRepository.save(account);
     }
 
-    // 🔹 GET ACCOUNT
-    public Account getAccount(String accountNumber) {
-        return accountRepository.findByAccountNumber(accountNumber)
-                .orElseThrow(() -> new RuntimeException("Account not found"));
-    }
-
-    // 🔹 DEPOSIT
+    // DEPOSIT
     @Transactional
     public Account deposit(String accountNumber, BigDecimal amount) {
 
-        Account account = getAccount(accountNumber);
+        Account account = accountRepository.findByAccountNumber(accountNumber)
+                .orElseThrow(() -> new RuntimeException("Account not found"));
 
         account.setBalance(account.getBalance().add(amount));
-        accountRepository.save(account);
 
         transactionRepository.save(Transaction.builder()
-                .fromAccount(accountNumber)
                 .toAccount(accountNumber)
                 .amount(amount)
                 .type("DEPOSIT")
                 .createdAt(LocalDateTime.now())
                 .build());
 
-        emailService.sendMail(
-                account.getUser().getEmail(),
-                "Money Deposited",
-                "₹" + amount + " deposited. Balance: ₹" + account.getBalance()
-        );
+        // MAIL BODY
+        String body = "Hello,\n\n"
+                + "Amount ₹" + amount + " has been successfully deposited.\n"
+                + "Account Number: " + accountNumber + "\n"
+                + "Current Balance: ₹" + account.getBalance() + "\n\n"
+                + "Thank you,\nTrust Banking System";
 
-        return account;
+        emailService.sendMail(account.getUser().getEmail(),
+                "Deposit Successful",
+                body);
+
+        return accountRepository.save(account);
     }
 
-    // 🔹 WITHDRAW
+    // WITHDRAW
     @Transactional
     public Account withdraw(String accountNumber, BigDecimal amount) {
 
-        Account account = getAccount(accountNumber);
+        Account account = accountRepository.findByAccountNumber(accountNumber)
+                .orElseThrow(() -> new RuntimeException("Account not found"));
 
         if (account.getBalance().compareTo(amount) < 0) {
             throw new RuntimeException("Insufficient balance");
         }
 
         account.setBalance(account.getBalance().subtract(amount));
-        accountRepository.save(account);
 
         transactionRepository.save(Transaction.builder()
                 .fromAccount(accountNumber)
-                .toAccount(accountNumber)
                 .amount(amount)
                 .type("WITHDRAW")
                 .createdAt(LocalDateTime.now())
                 .build());
 
-        emailService.sendMail(
-                account.getUser().getEmail(),
-                "Money Withdrawn",
-                "₹" + amount + " withdrawn. Balance: ₹" + account.getBalance()
-        );
+        String body = "Hello,\n\n"
+                + "Amount ₹" + amount + " has been withdrawn.\n"
+                + "Account Number: " + accountNumber + "\n"
+                + "Remaining Balance: ₹" + account.getBalance() + "\n\n"
+                + "Thank you,\nTrust Banking System";
 
-        return account;
+        emailService.sendMail(account.getUser().getEmail(),
+                "Withdrawal Successful",
+                body);
+
+        return accountRepository.save(account);
     }
 
-    // 🔹 TRANSFER
+    // TRANSFER
     @Transactional
-    public void transfer(String fromAccount,
-                         String toAccount,
-                         BigDecimal amount) {
+    public void transfer(String from, String to, BigDecimal amount) {
 
-        Account sender = getAccount(fromAccount);
-        Account receiver = getAccount(toAccount);
+        Account sender = accountRepository.findByAccountNumber(from)
+                .orElseThrow(() -> new RuntimeException("Sender not found"));
+
+        Account receiver = accountRepository.findByAccountNumber(to)
+                .orElseThrow(() -> new RuntimeException("Receiver not found"));
 
         if (sender.getBalance().compareTo(amount) < 0) {
             throw new RuntimeException("Insufficient balance");
@@ -136,29 +136,32 @@ public class AccountService {
         accountRepository.save(receiver);
 
         transactionRepository.save(Transaction.builder()
-                .fromAccount(fromAccount)
-                .toAccount(toAccount)
+                .fromAccount(from)
+                .toAccount(to)
                 .amount(amount)
                 .type("TRANSFER")
                 .createdAt(LocalDateTime.now())
                 .build());
 
-        emailService.sendMail(
-                sender.getUser().getEmail(),
+        // MAIL BODY
+        String senderBody = "Hello,\n\n"
+                + "₹" + amount + " has been transferred from your account.\n"
+                + "To Account: " + to + "\n"
+                + "Remaining Balance: ₹" + sender.getBalance() + "\n\n"
+                + "Thank you,\nTrust Banking System";
+
+        String receiverBody = "Hello,\n\n"
+                + "₹" + amount + " has been credited to your account.\n"
+                + "From Account: " + from + "\n"
+                + "Current Balance: ₹" + receiver.getBalance() + "\n\n"
+                + "Thank you,\nTrust Banking System";
+
+        emailService.sendMail(sender.getUser().getEmail(),
                 "Money Debited",
-                "₹" + amount + " transferred to " + toAccount +
-                        ". Balance: ₹" + sender.getBalance()
-        );
+                senderBody);
 
-        emailService.sendMail(
-                receiver.getUser().getEmail(),
+        emailService.sendMail(receiver.getUser().getEmail(),
                 "Money Credited",
-                "₹" + amount + " received from " + fromAccount +
-                        ". Balance: ₹" + receiver.getBalance()
-        );
-    }
-
-    public List<Account> getAllAccounts() {
-        return accountRepository.findAll();
+                receiverBody);
     }
 }

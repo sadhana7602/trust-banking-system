@@ -13,13 +13,19 @@ public class EmailService {
         this.mailSender = mailSender;
     }
 
-    public void sendMail(String toEmail, String subject, String body) {
+    // GENERIC METHOD
+    public void sendMail(String to, String subject, String body) {
 
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(toEmail);
-        message.setSubject(subject);
-        message.setText(body);
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setTo(to);
+            message.setSubject(subject);
+            message.setText(body);
 
-        mailSender.send(message);
+            mailSender.send(message);
+
+        } catch (Exception e) {
+            System.out.println("Mail sending failed: " + e.getMessage());
+        }
     }
 }

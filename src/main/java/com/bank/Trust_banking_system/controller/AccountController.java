@@ -1,8 +1,10 @@
 package com.bank.Trust_banking_system.controller;
 
+import com.bank.Trust_banking_system.dto.CreateAccountRequest;
 import com.bank.Trust_banking_system.dto.TransferRequest;
 import com.bank.Trust_banking_system.entity.Account;
 import com.bank.Trust_banking_system.service.AccountService;
+
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,42 +20,38 @@ public class AccountController {
         this.accountService = accountService;
     }
 
-    // 🔹 CREATE ACCOUNT
+    // CREATE ACCOUNT
     @PostMapping("/create")
-    public Account createAccount(@RequestParam Long userId,
-                                 @RequestParam String accountType,
-                                 @RequestParam String branchName,
-                                 @RequestParam String ifscCode) {
-
-        return accountService.createAccount(userId, accountType, branchName, ifscCode);
+    public Account createAccount(@Valid @RequestBody CreateAccountRequest request) {
+        return accountService.createAccount(
+                request.getUserId(),
+                request.getAccountType(),
+                request.getBranchName()
+        );
     }
 
-    // 🔹 GET ACCOUNT
-    @GetMapping("/{accountNumber}")
-    public Account getAccount(@PathVariable String accountNumber) {
-        return accountService.getAccount(accountNumber);
-    }
-
-    // 🔹 DEPOSIT
+    // DEPOSIT
     @PostMapping("/deposit")
     public Account deposit(@RequestParam String accountNumber,
                            @RequestParam BigDecimal amount) {
         return accountService.deposit(accountNumber, amount);
     }
 
-    // 🔹 WITHDRAW
+    // WITHDRAW
     @PostMapping("/withdraw")
     public Account withdraw(@RequestParam String accountNumber,
                             @RequestParam BigDecimal amount) {
         return accountService.withdraw(accountNumber, amount);
     }
 
-    // 🔹 TRANSFER
+    // TRANSFER
     @PostMapping("/transfer")
     public String transfer(@Valid @RequestBody TransferRequest request) {
-        accountService.transfer(request.getFromAccount(),
+        accountService.transfer(
+                request.getFromAccount(),
                 request.getToAccount(),
-                request.getAmount());
+                request.getAmount()
+        );
         return "Transfer successful";
     }
 }
