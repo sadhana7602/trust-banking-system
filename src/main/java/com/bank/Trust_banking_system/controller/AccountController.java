@@ -1,7 +1,9 @@
 package com.bank.Trust_banking_system.controller;
 
+import com.bank.Trust_banking_system.dto.TransferRequest;
 import com.bank.Trust_banking_system.entity.Account;
 import com.bank.Trust_banking_system.service.AccountService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -48,11 +50,10 @@ public class AccountController {
 
     // 🔹 TRANSFER
     @PostMapping("/transfer")
-    public String transfer(@RequestParam String fromAccount,
-                           @RequestParam String toAccount,
-                           @RequestParam BigDecimal amount) {
-
-        accountService.transfer(fromAccount, toAccount, amount);
+    public String transfer(@Valid @RequestBody TransferRequest request) {
+        accountService.transfer(request.getFromAccount(),
+                request.getToAccount(),
+                request.getAmount());
         return "Transfer successful";
     }
 }

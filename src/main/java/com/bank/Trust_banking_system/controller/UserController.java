@@ -2,6 +2,7 @@ package com.bank.Trust_banking_system.controller;
 
 import com.bank.Trust_banking_system.entity.User;
 import com.bank.Trust_banking_system.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -16,7 +17,7 @@ public class UserController {
 
     // 🔹 REGISTER USER
     @PostMapping("/register")
-    public User register(@RequestBody User user) {
+    public User register(@Valid @RequestBody User user) {
         return userService.register(user);
     }
 
