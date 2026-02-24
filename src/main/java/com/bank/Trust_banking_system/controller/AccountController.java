@@ -2,13 +2,12 @@ package com.bank.Trust_banking_system.controller;
 
 import com.bank.Trust_banking_system.dto.CreateAccountRequest;
 import com.bank.Trust_banking_system.dto.TransferRequest;
+import com.bank.Trust_banking_system.dto.TransactionRequest;
 import com.bank.Trust_banking_system.entity.Account;
 import com.bank.Trust_banking_system.service.AccountService;
 
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
-
-import java.math.BigDecimal;
 
 @RestController
 @RequestMapping("/api/accounts")
@@ -32,16 +31,20 @@ public class AccountController {
 
     // DEPOSIT
     @PostMapping("/deposit")
-    public Account deposit(@RequestParam String accountNumber,
-                           @RequestParam BigDecimal amount) {
-        return accountService.deposit(accountNumber, amount);
+    public Account deposit(@Valid @RequestBody TransactionRequest request) {
+        return accountService.deposit(
+                request.getAccountNumber(),
+                request.getAmount()
+        );
     }
 
     // WITHDRAW
     @PostMapping("/withdraw")
-    public Account withdraw(@RequestParam String accountNumber,
-                            @RequestParam BigDecimal amount) {
-        return accountService.withdraw(accountNumber, amount);
+    public Account withdraw(@Valid @RequestBody TransactionRequest request) {
+        return accountService.withdraw(
+                request.getAccountNumber(),
+                request.getAmount()
+        );
     }
 
     // TRANSFER
