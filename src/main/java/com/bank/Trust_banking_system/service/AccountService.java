@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -155,5 +156,9 @@ public class AccountService {
                 "₹" + amount + " received from " + fromAccount +
                         ". Balance: ₹" + receiver.getBalance()
         );
+    }
+
+    public List<Account> getAllAccounts() {
+        return accountRepository.findAll();
     }
 }
