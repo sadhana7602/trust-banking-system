@@ -1,9 +1,5 @@
 package com.bank.Trust_banking_system.controller;
 
-
-
-import com.bank.Trust_banking_system.dto.LoginRequest;
-import com.bank.Trust_banking_system.dto.RegisterRequest;
 import com.bank.Trust_banking_system.entity.User;
 import com.bank.Trust_banking_system.service.UserService;
 import org.springframework.web.bind.annotation.*;
@@ -18,13 +14,16 @@ public class UserController {
         this.userService = userService;
     }
 
+    // 🔹 REGISTER USER
     @PostMapping("/register")
-    public User register(@RequestBody RegisterRequest request) {
-        return userService.register(request);
+    public User register(@RequestBody User user) {
+        return userService.register(user);
     }
 
+    // 🔹 LOGIN USER
     @PostMapping("/login")
-    public User login(@RequestBody LoginRequest request) {
-        return userService.login(request);
+    public User login(@RequestParam String email,
+                      @RequestParam String password) {
+        return userService.login(email, password);
     }
 }

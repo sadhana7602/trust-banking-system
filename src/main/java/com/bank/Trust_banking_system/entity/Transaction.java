@@ -8,21 +8,14 @@ import java.time.LocalDateTime;
 @Entity
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor @Builder
-public class Account {
+public class Transaction {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String accountNumber;
-    private String accountType;
-    private String branchName;
-    private String ifscCode;
-
-    private BigDecimal balance;
-
+    private String fromAccount;
+    private String toAccount;
+    private BigDecimal amount;
+    private String type;
     private LocalDateTime createdAt;
-
-    @ManyToOne
-    @JoinColumn(name="user_id")
-    private User user;
 }
