@@ -6,6 +6,9 @@ import AdminLoginPage from "./pages/AdminLoginPage";
 import Dashboard from "./pages/Dashboard";
 import RegisterPage from "./pages/RegisterPage";
 import CreateAccountPage from "./pages/CreateAccountPage";
+import DepositPage from "./pages/DepositPage";
+import WithdrawPage from "./pages/WithdrawPage";
+import TransferPage from "./pages/TransferPage";
 
 function App() {
   return (
@@ -18,6 +21,9 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/create-account" element={<CreateAccountPage />} />
+          <Route path="/deposit" element={<DepositPage />} />
+          <Route path="/withdraw" element={<WithdrawPage />} />
+          <Route path="/transfer" element={<TransferPage />} />
         </Route>
       </Routes>
     

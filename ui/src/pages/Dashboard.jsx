@@ -73,13 +73,15 @@ function Dashboard() {
           <div className="bg-white p-6 rounded shadow">
             <h2 className="font-semibold mb-3">Quick Actions</h2>
             <div className="flex gap-3">
-              <button className="bg-green-500 text-white px-4 py-2 rounded">
+                <button onClick={() => navigate("/deposit")} className="bg-green-500 text-white px-4 py-2 rounded">
                 Deposit
               </button>
-              <button className="bg-yellow-500 text-white px-4 py-2 rounded">
+
+              <button onClick={() => navigate("/withdraw")} className="bg-yellow-500 text-white px-4 py-2 rounded">
                 Withdraw
               </button>
-              <button className="bg-blue-500 text-white px-4 py-2 rounded">
+
+              <button onClick={() => navigate("/transfer")} className="bg-blue-500 text-white px-4 py-2 rounded">
                 Transfer
               </button>
             </div>

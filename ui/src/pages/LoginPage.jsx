@@ -19,7 +19,8 @@ function LoginPage() {
     }
 
     const data = await response.json();
-
+    
+    localStorage.setItem("userId", data.userId);
     localStorage.setItem("token", data.token);
     localStorage.setItem("email", data.email);
     localStorage.setItem("name", data.fullName); // 👈 NEW
