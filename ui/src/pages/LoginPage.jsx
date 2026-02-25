@@ -23,7 +23,8 @@ function LoginPage() {
     localStorage.setItem("userId", data.userId);
     localStorage.setItem("token", data.token);
     localStorage.setItem("email", data.email);
-    localStorage.setItem("name", data.fullName); // 👈 NEW
+    localStorage.setItem("fullName", data.name);
+    localStorage.setItem("userId", data.userId);
 
     navigate("/dashboard");
   };

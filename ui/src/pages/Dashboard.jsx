@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 function Dashboard() {
   const navigate = useNavigate();
-  const name = localStorage.getItem("name");
+  const name = localStorage.getItem("fullName");
 
   const [account, setAccount] = useState(null);
   const [notFound, setNotFound] = useState(false);

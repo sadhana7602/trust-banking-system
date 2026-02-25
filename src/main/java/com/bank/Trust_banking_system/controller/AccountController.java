@@ -25,7 +25,7 @@ public class AccountController {
     @GetMapping("/my-account")
     public Account getMyAccount(Authentication authentication) {
 
-        String email = (String) authentication.getPrincipal();
+        String email = authentication.getName();
 
         return accountService.getMyAccount(email);
     }
