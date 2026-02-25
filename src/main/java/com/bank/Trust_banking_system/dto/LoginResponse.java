@@ -1,26 +1,18 @@
 package com.bank.Trust_banking_system.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+@Data
+@AllArgsConstructor
 public class LoginResponse {
 
     private String token;
     private String email;
-    private String fullName;
-
-    public LoginResponse(String token, String email, String fullName) {
-        this.token = token;
-        this.email = email;
-        this.fullName = fullName;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getFullName() {
-        return fullName;
-    }
+    private String name;
+    private Long userId;
 }

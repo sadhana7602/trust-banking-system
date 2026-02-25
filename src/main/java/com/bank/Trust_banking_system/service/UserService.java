@@ -64,13 +64,13 @@ public class UserService {
             throw new InvalidCredentialsException("Invalid email or password");
         }
 
-        // ✅ Generate JWT token
         String token = jwtUtil.generateToken(user.getEmail());
 
         return new LoginResponse(
                 token,
                 user.getEmail(),
-                user.getFullName()
+                user.getFullName(),
+                user.getId()
         );
     }
 }

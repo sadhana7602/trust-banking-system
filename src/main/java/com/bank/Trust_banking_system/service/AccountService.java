@@ -43,7 +43,7 @@ public class AccountService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         return accountRepository.findByUserId(user.getId())
-                .orElseThrow(() -> new RuntimeException("Account not found"));
+                .orElseThrow(() -> new RuntimeException("ACCOUNT_NOT_FOUND"));
     }
 
     // 🔹 CREATE ACCOUNT
