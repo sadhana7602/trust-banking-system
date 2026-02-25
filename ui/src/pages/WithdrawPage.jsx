@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { authFetch } from "../services/api";
+import { useNavigate } from "react-router-dom";
 
 function WithdrawPage() {
   const [amount, setAmount] = useState("");
+  const navigate = useNavigate();
 
   const handleWithdraw = async () => {
     const accountNumber = localStorage.getItem("accountNumber");
@@ -12,7 +14,9 @@ function WithdrawPage() {
       { method: "POST" }
     );
 
-    if (res.ok) alert("Withdrawal successful");
+    if (res.ok) {alert("Withdrawal successful");
+        navigate("/dashboard");
+    }
     else alert("Withdrawal failed");
   };
 

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { authFetch } from "../services/api";
+import { useNavigate } from "react-router-dom";
 
 function TransferPage() {
   const [toAccount, setToAccount] = useState("");
@@ -7,7 +8,7 @@ function TransferPage() {
 
   const handleTransfer = async () => {
     const fromAccount = localStorage.getItem("accountNumber");
-
+    const navigate = useNavigate();
     const res = await authFetch("/api/accounts/transfer", {
       method: "POST",
       body: JSON.stringify({
@@ -17,7 +18,9 @@ function TransferPage() {
       })
     });
 
-    if (res.ok) alert("Transfer successful");
+    if (res.ok) {alert("Transfer successful");
+        navigate("/dashboard");
+    }
     else alert("Transfer failed");
   };
 

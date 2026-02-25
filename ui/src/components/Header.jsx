@@ -36,9 +36,16 @@ function Header() {
 
           {token && (
             <>
-              <span className="text-gray-700 font-medium">
-                Hi, {name}
-              </span>
+              {name && (
+        <div className="flex items-center gap-3">
+          <span className="font-medium">{name}</span>
+
+          {/* Profile Icon */}
+          <div className="w-9 h-9 rounded-full bg-white text-blue-600 flex items-center justify-center font-bold">
+            {name.charAt(0).toUpperCase()}
+          </div>
+        </div>
+      )}
               <button
                 onClick={logout}
                 className="bg-indigo-600 text-white px-4 py-1 rounded"
@@ -47,6 +54,8 @@ function Header() {
               </button>
             </>
           )}
+
+          
         </nav>
       </div>
     </header>

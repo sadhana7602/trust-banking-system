@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { authFetch } from "../services/api";
+import { useNavigate } from "react-router-dom";
 
 function DepositPage() {
   const [amount, setAmount] = useState("");
+  const navigate = useNavigate();
 
   const handleDeposit = async () => {
     const accountNumber = localStorage.getItem("accountNumber");
@@ -12,7 +14,10 @@ function DepositPage() {
       { method: "POST" }
     );
 
-    if (res.ok) alert("Deposit successful");
+    if (res.ok) {
+        alert("Deposit successful");
+        navigate("/dashboard");
+    }
     else alert("Deposit failed");
   };
 
