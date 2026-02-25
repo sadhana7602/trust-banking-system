@@ -1,0 +1,41 @@
+import { useState } from "react";
+import { authFetch } from "../services/api";
+
+function WithdrawPage() {
+  const [amount, setAmount] = useState("");
+
+  const handleWithdraw = async () => {
+    const accountNumber = localStorage.getItem("accountNumber");
+
+    const res = await authFetch(
+      `/api/accounts/withdraw?accountNumber=${accountNumber}&amount=${amount}`,
+      { method: "POST" }
+    );
+
+    if (res.ok) alert("Withdrawal successful");
+    else alert("Withdrawal failed");
+  };
+
+  return (
+    <div className="p-10">
+      <h2 className="text-xl font-bold mb-4">Withdraw Money</h2>
+
+      <input
+        type="number"
+        placeholder="Enter amount"
+        value={amount}
+        onChange={(e) => setAmount(e.target.value)}
+        className="border p-2 rounded mr-3"
+      />
+
+      <button
+        onClick={handleWithdraw}
+        className="bg-yellow-600 text-white px-4 py-2 rounded"
+      >
+        Withdraw
+      </button>
+    </div>
+  );
+}
+
+export default WithdrawPage;
