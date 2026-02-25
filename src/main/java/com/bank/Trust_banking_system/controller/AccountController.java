@@ -7,6 +7,7 @@ import com.bank.Trust_banking_system.entity.Account;
 import com.bank.Trust_banking_system.service.AccountService;
 
 import jakarta.validation.Valid;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -19,6 +20,15 @@ public class AccountController {
         this.accountService = accountService;
     }
 
+
+    // 🔹 GET LOGGED IN USER ACCOUNT
+    @GetMapping("/my-account")
+    public Account getMyAccount(Authentication authentication) {
+
+        String email = (String) authentication.getPrincipal();
+
+        return accountService.getMyAccount(email);
+    }
     // CREATE ACCOUNT
     @PostMapping("/create")
     public Account createAccount(@Valid @RequestBody CreateAccountRequest request) {

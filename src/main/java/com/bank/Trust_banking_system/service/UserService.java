@@ -8,34 +8,53 @@ import com.bank.Trust_banking_system.security.JwtUtil;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+
 @Service
 public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final EmailService emailService;
     private final JwtUtil jwtUtil;
 
     public UserService(UserRepository userRepository,
                        PasswordEncoder passwordEncoder,
+                       EmailService emailService,
                        JwtUtil jwtUtil) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.emailService = emailService;
         this.jwtUtil = jwtUtil;
     }
 
-    // REGISTER
+    // 🔹 REGISTER USER
     public User register(User user) {
 
+        // ✅ Check duplicate email BEFORE saving
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
             throw new RuntimeException("Email already exists");
         }
 
+        // ✅ Encode password
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setCreatedAt(LocalDateTime.now());
 
-        return userRepository.save(user);
+        User savedUser = userRepository.save(user);
+
+        // ✅ Send welcome email
+        emailService.sendMail(
+                savedUser.getEmail(),
+                "Welcome to Trust Bank 🎉",
+                "Hello " + savedUser.getFullName() +
+                        ",\n\nYour registration is successful.\n\n" +
+                        "Thank you for choosing Trust Bank."
+        );
+
+        return savedUser;
     }
 
-    // LOGIN WITH JWT
+    // 🔹 LOGIN WITH JWT
     public LoginResponse login(String email, String password) {
 
         User user = userRepository.findByEmail(email)
@@ -45,8 +64,13 @@ public class UserService {
             throw new InvalidCredentialsException("Invalid email or password");
         }
 
+        // ✅ Generate JWT token
         String token = jwtUtil.generateToken(user.getEmail());
 
-        return new LoginResponse(token, user.getEmail(), user.getFullName());
+        return new LoginResponse(
+                token,
+                user.getEmail(),
+                user.getFullName()
+        );
     }
 }

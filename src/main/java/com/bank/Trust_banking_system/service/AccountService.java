@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Service
 public class AccountService {
@@ -32,7 +31,22 @@ public class AccountService {
         this.emailService = emailService;
     }
 
-    // CREATE ACCOUNT
+    private String generateAccountNumber() {
+        long number = (long) (Math.random() * 900000000000000L) + 100000000000000L;
+        return String.valueOf(number);
+    }
+
+    // 🔹 GET LOGGED IN USER ACCOUNT
+    public Account getMyAccount(String email) {
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        return accountRepository.findByUserId(user.getId())
+                .orElseThrow(() -> new RuntimeException("Account not found"));
+    }
+
+    // 🔹 CREATE ACCOUNT
     public Account createAccount(Long userId,
                                  String accountType,
                                  String branchName) {
@@ -40,8 +54,14 @@ public class AccountService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
+        if (accountRepository.findByUserId(userId).isPresent()) {
+            throw new RuntimeException("User already has an account");
+        }
+
+        String accountNumber = generateAccountNumber();
+
         Account account = Account.builder()
-                .accountNumber(UUID.randomUUID().toString())
+                .accountNumber(accountNumber)
                 .accountType(accountType)
                 .branchName(branchName)
                 .balance(BigDecimal.ZERO)
@@ -49,10 +69,26 @@ public class AccountService {
                 .user(user)
                 .build();
 
-        return accountRepository.save(account);
+        Account savedAccount = accountRepository.save(account);
+
+        // 📧 SEND ACCOUNT CREATION EMAIL
+        String body = "Hello " + user.getFullName() + ",\n\n"
+                + "Your bank account has been created successfully.\n\n"
+                + "Account Number: " + savedAccount.getAccountNumber() + "\n"
+                + "Account Type: " + savedAccount.getAccountType() + "\n"
+                + "Branch: " + savedAccount.getBranchName() + "\n\n"
+                + "Thank you for choosing Trust Banking System.";
+
+        emailService.sendMail(
+                user.getEmail(),
+                "Account Created Successfully 🎉",
+                body
+        );
+
+        return savedAccount;
     }
 
-    // DEPOSIT
+    // 🔹 DEPOSIT
     @Transactional
     public Account deposit(String accountNumber, BigDecimal amount) {
 
@@ -68,7 +104,6 @@ public class AccountService {
                 .createdAt(LocalDateTime.now())
                 .build());
 
-        // MAIL BODY
         String body = "Hello,\n\n"
                 + "Amount ₹" + amount + " has been successfully deposited.\n"
                 + "Account Number: " + accountNumber + "\n"
@@ -82,7 +117,7 @@ public class AccountService {
         return accountRepository.save(account);
     }
 
-    // WITHDRAW
+    // 🔹 WITHDRAW
     @Transactional
     public Account withdraw(String accountNumber, BigDecimal amount) {
 
@@ -115,7 +150,7 @@ public class AccountService {
         return accountRepository.save(account);
     }
 
-    // TRANSFER
+    // 🔹 TRANSFER
     @Transactional
     public void transfer(String from, String to, BigDecimal amount) {
 
@@ -143,7 +178,6 @@ public class AccountService {
                 .createdAt(LocalDateTime.now())
                 .build());
 
-        // MAIL BODY
         String senderBody = "Hello,\n\n"
                 + "₹" + amount + " has been transferred from your account.\n"
                 + "To Account: " + to + "\n"

@@ -57,6 +57,10 @@ function LoginPage() {
           Login here
           </a>
           </div>
+          <p className="text-center mt-3">
+          Don’t have an account?
+          <a href="/register" className="text-indigo-600 ml-1">Register</a>
+        </p>
       </div>
     </div>
   );
