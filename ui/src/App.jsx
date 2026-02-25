@@ -7,7 +7,7 @@ import Dashboard from "./pages/Dashboard";
 
 function App() {
   return (
-    <BrowserRouter>
+    
       <Routes>
         <Route element={<Layout />}>
           <Route path="/" element={<HomePage />} />
@@ -16,7 +16,7 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
         </Route>
       </Routes>
-    </BrowserRouter>
+    
   );
 }
 
