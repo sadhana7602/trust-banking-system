@@ -1,49 +1,42 @@
 package com.bank.Trust_banking_system.service;
 
+import com.bank.Trust_banking_system.dto.LoginResponse;
 import com.bank.Trust_banking_system.entity.User;
+import com.bank.Trust_banking_system.exception.InvalidCredentialsException;
 import com.bank.Trust_banking_system.repository.UserRepository;
+import com.bank.Trust_banking_system.security.JwtUtil;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import com.bank.Trust_banking_system.exception.InvalidCredentialsException;
-
-import java.time.LocalDateTime;
 
 @Service
 public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final EmailService emailService;
+    private final JwtUtil jwtUtil;
 
     public UserService(UserRepository userRepository,
                        PasswordEncoder passwordEncoder,
-                       EmailService emailService) {
+                       JwtUtil jwtUtil) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
-        this.emailService = emailService;
+        this.jwtUtil = jwtUtil;
     }
 
-    // 🔹 REGISTER USER
+    // REGISTER
     public User register(User user) {
 
+        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+            throw new RuntimeException("Email already exists");
+        }
+
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setCreatedAt(LocalDateTime.now());
 
-        User savedUser = userRepository.save(user);
-
-        emailService.sendMail(
-                savedUser.getEmail(),
-                "Welcome to Trust Bank",
-                "Hello " + savedUser.getFullName() +
-                        ", your registration is successful."
-        );
-
-        return savedUser;
+        return userRepository.save(user);
     }
 
-
-
-    public User login(String email, String password) {
+    // LOGIN WITH JWT
+    public LoginResponse login(String email, String password) {
 
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new InvalidCredentialsException("Invalid email or password"));
@@ -52,6 +45,8 @@ public class UserService {
             throw new InvalidCredentialsException("Invalid email or password");
         }
 
-        return user;
+        String token = jwtUtil.generateToken(user.getEmail());
+
+        return new LoginResponse(token, user.getEmail(), user.getFullName());
     }
 }

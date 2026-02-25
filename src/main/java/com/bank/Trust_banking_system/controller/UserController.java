@@ -1,8 +1,8 @@
 package com.bank.Trust_banking_system.controller;
 
+import com.bank.Trust_banking_system.dto.LoginResponse;
 import com.bank.Trust_banking_system.entity.User;
 import com.bank.Trust_banking_system.service.UserService;
-import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -15,17 +15,16 @@ public class UserController {
         this.userService = userService;
     }
 
-    // 🔹 REGISTER USER
+    // 🔹 REGISTER
     @PostMapping("/register")
-    public User register(@Valid @RequestBody User user) {
+    public User register(@RequestBody User user) {
         return userService.register(user);
     }
 
-    // 🔹 LOGIN USER
+    // 🔹 LOGIN
     @PostMapping("/login")
-    public User login(@RequestParam String email,
-                      @RequestParam String password) {
-        System.out.println("I am in");
+    public LoginResponse login(@RequestParam String email,
+                               @RequestParam String password) {
         return userService.login(email, password);
     }
 }
