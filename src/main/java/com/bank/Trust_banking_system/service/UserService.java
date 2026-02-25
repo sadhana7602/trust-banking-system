@@ -4,6 +4,7 @@ import com.bank.Trust_banking_system.entity.User;
 import com.bank.Trust_banking_system.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import com.bank.Trust_banking_system.exception.InvalidCredentialsException;
 
 import java.time.LocalDateTime;
 
@@ -40,14 +41,15 @@ public class UserService {
         return savedUser;
     }
 
-    // 🔹 LOGIN USER
+
+
     public User login(String email, String password) {
 
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new InvalidCredentialsException("Invalid email or password"));
 
         if (!passwordEncoder.matches(password, user.getPassword())) {
-            throw new RuntimeException("Invalid password");
+            throw new InvalidCredentialsException("Invalid email or password");
         }
 
         return user;

@@ -25,6 +25,7 @@ public class UserController {
     @PostMapping("/login")
     public User login(@RequestParam String email,
                       @RequestParam String password) {
+        System.out.println("I am in");
         return userService.login(email, password);
     }
 }
