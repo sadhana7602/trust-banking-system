@@ -22,6 +22,12 @@ function WithdrawPage() {
 
   return (
     <div className="p-10">
+      <button
+        onClick={() => navigate("/dashboard")}
+        className="mb-4 text-blue-500 hover:underline"
+      >
+        &larr; Back to Dashboard
+      </button>
       <h2 className="text-xl font-bold mb-4">Withdraw Money</h2>
 
       <input

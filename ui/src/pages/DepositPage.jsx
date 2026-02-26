@@ -6,6 +6,7 @@ function DepositPage() {
   const [amount, setAmount] = useState("");
   const navigate = useNavigate();
 
+
   const handleDeposit = async () => {
     const accountNumber = localStorage.getItem("accountNumber");
 
@@ -23,6 +24,12 @@ function DepositPage() {
 
   return (
     <div className="p-10">
+      <button
+        onClick={() => navigate("/dashboard")}
+        className="mb-4 text-blue-500 hover:underline"
+      >
+        &larr; Back to Dashboard
+      </button>
       <h2 className="text-xl font-bold mb-4">Deposit Money</h2>
 
       <input

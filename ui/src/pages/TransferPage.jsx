@@ -5,10 +5,10 @@ import { useNavigate } from "react-router-dom";
 function TransferPage() {
   const [toAccount, setToAccount] = useState("");
   const [amount, setAmount] = useState("");
+  const navigate = useNavigate();
 
   const handleTransfer = async () => {
     const fromAccount = localStorage.getItem("accountNumber");
-    const navigate = useNavigate();
     const res = await authFetch("/api/accounts/transfer", {
       method: "POST",
       body: JSON.stringify({
@@ -26,6 +26,12 @@ function TransferPage() {
 
   return (
     <div className="p-10">
+      <button
+        onClick={() => navigate("/dashboard")}
+        className="mb-4 text-blue-500 hover:underline"
+      >
+        &larr; Back to Dashboard
+      </button>
       <h2 className="text-xl font-bold mb-4">Transfer Money</h2>
 
       <input
