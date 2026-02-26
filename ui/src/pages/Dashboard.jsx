@@ -16,11 +16,22 @@ function Dashboard() {
         const res = await authFetch("/api/accounts/my-account");
 
         if (res.ok) {
-          const data = await res.json();
+          // try to parse JSON, but server may return empty body
+          let data;
+          try {
+            data = await res.json();
+          } catch (e) {
+            data = null;
+          }
 
-          // ✅ NEW FIX: backend returns null when no account
-          if (!data) {
+          // redirect when there is no account (null or empty object/string)
+          if (
+            !data ||
+            (typeof data === "object" && Object.keys(data).length === 0) ||
+            (typeof data === "string" && data.trim() === "")
+          ) {
             setNotFound(true);
+            navigate("/create-account");
             return;
           }
 
@@ -35,7 +46,7 @@ function Dashboard() {
     };
 
     loadAccount();
-  }, []);
+  }, [navigate]);
 
   if (loading) return <div className="p-10">Loading account details...</div>;
 
@@ -43,20 +54,13 @@ function Dashboard() {
     <div className="p-10 space-y-6">
       <h1 className="text-2xl font-bold">Welcome {name} 👋</h1>
 
-      {/* 🔴 NO ACCOUNT STATE */}
+      {/* 🔴 NO ACCOUNT STATE - user will already be redirected; still show message briefly if needed */}
       {notFound && (
         <div className="bg-yellow-100 p-6 rounded shadow">
           <p className="font-semibold">No account found.</p>
           <p className="text-sm text-gray-600">
-            Please create your bank account to continue.
+            Redirecting to create account...
           </p>
-
-          <button
-            onClick={() => navigate("/create-account")}
-            className="bg-indigo-600 text-white px-4 py-2 mt-3 rounded"
-          >
-            Create Account
-          </button>
         </div>
       )}
 
