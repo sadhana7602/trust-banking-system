@@ -36,14 +36,13 @@ public class AccountService {
         return String.valueOf(number);
     }
 
-    // 🔹 GET ACCOUNT BY USER EMAIL
+    // 🔹 GET ACCOUNT
     public Account getMyAccount(String email) {
-
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         return accountRepository.findByUserId(user.getId())
-                .orElseThrow(() -> new RuntimeException("ACCOUNT_NOT_FOUND"));
+                .orElseThrow(() -> new RuntimeException("Account not found"));
     }
 
     // 🔹 CREATE ACCOUNT
@@ -58,10 +57,8 @@ public class AccountService {
             throw new RuntimeException("User already has an account");
         }
 
-        String accountNumber = generateAccountNumber();
-
         Account account = Account.builder()
-                .accountNumber(accountNumber)
+                .accountNumber(generateAccountNumber())
                 .accountType(accountType)
                 .branchName(branchName)
                 .balance(BigDecimal.ZERO)
@@ -71,30 +68,25 @@ public class AccountService {
 
         Account saved = accountRepository.save(account);
 
-        String body = "Hello " + user.getFullName() + ",\n\n"
-                + "Your bank account has been created successfully.\n"
-                + "Account Number: " + saved.getAccountNumber() + "\n\n"
-                + "Thank you,\nTrust Banking System";
-
-        emailService.sendMail(user.getEmail(), "Account Created", body);
+        emailService.sendMail(
+                user.getEmail(),
+                "Account Created",
+                "Your account number: " + saved.getAccountNumber()
+        );
 
         return saved;
     }
 
-    // 🔹 DEPOSIT BY USER
+    // 🔹 DEPOSIT
     @Transactional
     public Account depositByUser(String email, BigDecimal amount) {
 
         Account account = getMyAccount(email);
 
-        account.setBalance(account.getBalance().add(BigDecimal.valueOf(amount)));
+        account.setBalance(account.getBalance().add(amount));
 
-        transactionRepository.save(Transaction.builder()
-                .toAccount(account.getAccountNumber())
-                .amount(amount)
-                .type("DEPOSIT")
-                .createdAt(LocalDateTime.now())
-                .build());
+        // SAVE TRANSACTION
+        saveTransaction(null, account.getAccountNumber(), amount, "DEPOSIT");
 
         emailService.sendMail(
                 account.getUser().getEmail(),
@@ -105,7 +97,7 @@ public class AccountService {
         return accountRepository.save(account);
     }
 
-    // 🔹 WITHDRAW BY USER
+    // 🔹 WITHDRAW
     @Transactional
     public Account withdrawByUser(String email, BigDecimal amount) {
 
@@ -117,12 +109,8 @@ public class AccountService {
 
         account.setBalance(account.getBalance().subtract(amount));
 
-        transactionRepository.save(Transaction.builder()
-                .fromAccount(account.getAccountNumber())
-                .amount(amount)
-                .type("WITHDRAW")
-                .createdAt(LocalDateTime.now())
-                .build());
+        // SAVE TRANSACTION
+        saveTransaction(account.getAccountNumber(), null, amount, "WITHDRAW");
 
         emailService.sendMail(
                 account.getUser().getEmail(),
@@ -133,7 +121,7 @@ public class AccountService {
         return accountRepository.save(account);
     }
 
-    // 🔹 TRANSFER BY USER
+    // 🔹 TRANSFER
     @Transactional
     public void transferByUser(String email, String toAccount, BigDecimal amount) {
 
@@ -152,13 +140,8 @@ public class AccountService {
         accountRepository.save(sender);
         accountRepository.save(receiver);
 
-        transactionRepository.save(Transaction.builder()
-                .fromAccount(sender.getAccountNumber())
-                .toAccount(toAccount)
-                .amount(amount)
-                .type("TRANSFER")
-                .createdAt(LocalDateTime.now())
-                .build());
+        // SAVE TRANSACTION
+        saveTransaction(sender.getAccountNumber(), toAccount, amount, "TRANSFER");
 
         emailService.sendMail(sender.getUser().getEmail(),
                 "Money Debited",
@@ -167,5 +150,20 @@ public class AccountService {
         emailService.sendMail(receiver.getUser().getEmail(),
                 "Money Credited",
                 "₹" + amount + " received from " + sender.getAccountNumber());
+    }
+
+    // 🔹 COMMON TRANSACTION LOGGER
+    private void saveTransaction(String from,
+                                 String to,
+                                 BigDecimal amount,
+                                 String type) {
+
+        transactionRepository.save(Transaction.builder()
+                .fromAccount(from)
+                .toAccount(to)
+                .amount(amount)
+                .type(type)
+                .createdAt(LocalDateTime.now())
+                .build());
     }
 }
