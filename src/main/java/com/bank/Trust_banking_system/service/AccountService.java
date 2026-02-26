@@ -38,11 +38,12 @@ public class AccountService {
 
     // 🔹 GET ACCOUNT
     public Account getMyAccount(String email) {
+
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         return accountRepository.findByUserId(user.getId())
-                .orElseThrow(() -> new RuntimeException("Account not found"));
+                .orElse(null); // ✅ return null instead of error
     }
 
     // 🔹 CREATE ACCOUNT

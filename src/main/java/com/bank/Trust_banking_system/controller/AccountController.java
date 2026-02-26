@@ -21,10 +21,10 @@ public class AccountController {
         this.accountService = accountService;
     }
 
-    // 🔹 GET LOGGED IN USER ACCOUNT
     @GetMapping("/my-account")
     public Account getMyAccount(Authentication authentication) {
-        String email = authentication.getName();
+
+        String email = authentication.getName(); // from JWT
         return accountService.getMyAccount(email);
     }
 

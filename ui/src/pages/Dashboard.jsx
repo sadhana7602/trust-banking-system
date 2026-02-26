@@ -15,16 +15,16 @@ function Dashboard() {
       try {
         const res = await authFetch("/api/accounts/my-account");
 
-        if (res.status === 404) {
-          setNotFound(true);
-          return;
-        }
-
         if (res.ok) {
           const data = await res.json();
-          setAccount(data);
 
-          // store account number for transactions
+          // ✅ NEW FIX: backend returns null when no account
+          if (!data) {
+            setNotFound(true);
+            return;
+          }
+
+          setAccount(data);
           localStorage.setItem("accountNumber", data.accountNumber);
         }
       } catch (err) {
@@ -63,13 +63,11 @@ function Dashboard() {
       {/* 🟢 ACCOUNT EXISTS */}
       {account && (
         <>
-          {/* BALANCE CARD */}
           <div className="bg-indigo-600 text-white p-6 rounded shadow">
             <h2 className="text-sm">Current Balance</h2>
             <p className="text-3xl font-bold">₹ {account.balance}</p>
           </div>
 
-          {/* ACCOUNT DETAILS */}
           <div className="bg-white p-6 rounded shadow">
             <h2 className="font-semibold mb-3">Account Details</h2>
             <p><strong>Account Number:</strong> {account.accountNumber}</p>
@@ -77,7 +75,6 @@ function Dashboard() {
             <p><strong>Branch:</strong> {account.branchName}</p>
           </div>
 
-          {/* QUICK ACTIONS */}
           <div className="bg-white p-6 rounded shadow">
             <h2 className="font-semibold mb-3">Quick Actions</h2>
 
@@ -103,7 +100,6 @@ function Dashboard() {
                 Transfer
               </button>
 
-              {/* Transaction History quicklink */}
               <button
                 onClick={() => navigate("/transactions")}
                 className="bg-indigo-600 text-white px-4 py-2 rounded"
