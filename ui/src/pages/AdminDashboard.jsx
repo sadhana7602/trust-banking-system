@@ -7,42 +7,39 @@ export default function AdminDashboard() {
   return (
     <div className="p-6">
 
-      <h1 className="text-2xl font-bold mb-6">
-        Admin Dashboard
-      </h1>
+      <h2 className="text-xl font-bold mb-6">Admin Dashboard</h2>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 gap-4">
 
         <button
           onClick={() => navigate("/admin/users")}
-          className="bg-blue-600 text-white p-4 rounded shadow"
+          className="bg-blue-500 text-white p-4 rounded"
         >
           View Users
         </button>
 
         <button
           onClick={() => navigate("/admin/accounts")}
-          className="bg-green-600 text-white p-4 rounded shadow"
+          className="bg-green-500 text-white p-4 rounded"
         >
           View Accounts
         </button>
 
         <button
           onClick={() => navigate("/admin/transactions")}
-          className="bg-purple-600 text-white p-4 rounded shadow"
+          className="bg-purple-500 text-white p-4 rounded"
         >
           View Transactions
         </button>
 
         <button
           onClick={() => navigate("/admin/tickets")}
-          className="bg-orange-600 text-white p-4 rounded shadow"
+          className="bg-orange-500 text-white p-4 rounded"
         >
-          Support Tickets
+          View Tickets
         </button>
 
       </div>
-
     </div>
   );
 }
