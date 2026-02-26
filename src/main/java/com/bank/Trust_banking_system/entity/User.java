@@ -36,4 +36,6 @@ public class User {
     private String postalCode;
 
     private LocalDateTime createdAt;
+    @Column(nullable = false)
+    private String role = "ROLE_USER";
 }

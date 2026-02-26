@@ -2,27 +2,37 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 function AdminLoginPage() {
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
   const handleLogin = async () => {
-    // For now same login API (later we add role check)
+
     const response = await fetch(
-      `http://localhost:8082/api/users/login?email=${email}&password=${password}`,
-      { method: "POST" }
+      "http://localhost:8082/api/admin/login",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          username,
+          password
+        })
+      }
     );
 
     if (!response.ok) {
-      alert("Invalid credentials");
+      alert("Invalid admin credentials");
       return;
     }
 
     const data = await response.json();
 
+    // store admin session
     localStorage.setItem("token", data.token);
-    localStorage.setItem("name", data.fullName);
-    localStorage.setItem("role", "ADMIN"); // temp
+    localStorage.setItem("fullName", data.name);
+    localStorage.setItem("role", "ADMIN");
 
     navigate("/admin");
   };
@@ -34,8 +44,8 @@ function AdminLoginPage() {
 
         <input
           className="border p-2 w-full mb-3"
-          placeholder="Email"
-          onChange={(e) => setEmail(e.target.value)}
+          placeholder="Username"
+          onChange={(e) => setUsername(e.target.value)}
         />
 
         <input

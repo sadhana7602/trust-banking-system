@@ -53,7 +53,8 @@ public class SecurityConfig {
                         // Public APIs
                         .requestMatchers(
                                 "/api/users/login",
-                                "/api/users/register"
+                                "/api/users/register",
+                                "/api/admin/login"
                         ).permitAll()
 
                         // All other APIs require authentication

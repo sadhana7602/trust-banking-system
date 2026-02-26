@@ -1,15 +1,32 @@
 package com.bank.Trust_banking_system.service;
 
+import com.bank.Trust_banking_system.dto.LoginResponse;
+import com.bank.Trust_banking_system.security.JwtUtil;
+
 import org.springframework.stereotype.Service;
 
 @Service
 public class AdminService {
 
-    private static final String ADMIN_USERNAME = "admin";
-    private static final String ADMIN_PASSWORD = "admin123";
+    private final JwtUtil jwtUtil;
 
-    public boolean login(String username, String password) {
-        return ADMIN_USERNAME.equals(username) &&
-                ADMIN_PASSWORD.equals(password);
+    public AdminService(JwtUtil jwtUtil) {
+        this.jwtUtil = jwtUtil;
+    }
+
+    public LoginResponse login(String username, String password) {
+
+        if (!"admin".equals(username) || !"admin".equals(password)) {
+            throw new RuntimeException("Invalid admin credentials");
+        }
+
+        String token = jwtUtil.generateToken("admin");
+
+        return new LoginResponse(
+                token,
+                "admin@trustbank.com",
+                "Administrator",
+                0L
+        );
     }
 }
