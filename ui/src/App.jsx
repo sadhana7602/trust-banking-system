@@ -11,6 +11,10 @@ import WithdrawPage from "./pages/WithdrawPage";
 import TransferPage from "./pages/TransferPage";
 import TransactionsPage from "./pages/TransactionsPage";
 import AdminDashboard from "./pages/AdminDashboard";
+import AdminUsersPage from "./pages/AdminUsersPage";
+import AdminAccountsPage from "./pages/AdminAccountsPage";
+import AdminTransactionsPage from "./pages/AdminTransactionsPage";
+import AdminTicketsPage from "./pages/AdminTicketsPage";
 
 function App() {
   return (
@@ -28,6 +32,10 @@ function App() {
           <Route path="/transfer" element={<TransferPage />} />
           <Route path="/transactions" element={<TransactionsPage />} />
           <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin/users" element={<AdminUsersPage />} />
+          <Route path="/admin/accounts" element={<AdminAccountsPage />} />
+          <Route path="/admin/transactions" element={<AdminTransactionsPage />} />
+          <Route path="/admin/tickets" element={<AdminTicketsPage />} />
         </Route>
       </Routes>
     

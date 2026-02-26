@@ -1,72 +1,52 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 
 function Header() {
   const navigate = useNavigate();
+  const location = useLocation();
+
   const [name, setName] = useState("");
-  const token = Boolean(localStorage.getItem("token"));
+  const token = localStorage.getItem("token");
 
   function extractNameFromRaw(raw) {
     if (!raw) return "";
     try {
       const parsed = JSON.parse(raw);
-      if (!parsed && parsed !== "") return String(parsed);
       if (typeof parsed === "string") return parsed;
       if (parsed && typeof parsed === "object") {
         return (
-          parsed.fullName || // handle capital N
-          parsed.fullname ||
-          parsed.FullName ||
+          parsed.fullName ||
           parsed.name ||
           parsed.firstName ||
-          parsed.first_name ||
-          parsed.userName ||
           parsed.username ||
           ""
         );
       }
-    } catch (e) {
+    } catch {
       return raw.replace(/^"|"$/g, "").trim();
     }
     return "";
   }
 
   function findNameInStorage() {
-    // include fullName and common variants
-    const keys = [
-      "fullName",
-      "fullname",
-      "FullName",
-      "name",
-      "user",
-      "userInfo",
-      "profile",
-      "userdata",
-      "userData"
-    ];
+    const keys = ["fullName", "name", "user", "profile"];
     for (const k of keys) {
       const raw = localStorage.getItem(k);
       if (!raw) continue;
       const extracted = extractNameFromRaw(raw);
-      if (extracted) {
-        console.debug("[Header] found name", { key: k, raw, extracted });
-        return extracted;
-      }
+      if (extracted) return extracted;
     }
-    console.debug("[Header] no name found in storage for keys", keys);
     return "";
   }
 
+  // 🔥 IMPORTANT FIX — run whenever route changes or token changes
   useEffect(() => {
     setName(findNameInStorage());
-    // update if another tab changes localStorage
-    const onStorage = () => setName(findNameInStorage());
-    window.addEventListener("storage", onStorage);
-    return () => window.removeEventListener("storage", onStorage);
-  }, []);
+  }, [token, location.pathname]);
 
   const logout = () => {
     localStorage.clear();
+    setName(""); // immediately reset UI
     navigate("/");
   };
 
@@ -88,18 +68,23 @@ function Header() {
               <Link to="/login" className="text-gray-600 hover:text-indigo-600">
                 User Login
               </Link>
-              <Link to="/admin-login" className="text-gray-600 hover:text-indigo-600">
+              <Link
+                to="/admin-login"
+                className="text-gray-600 hover:text-indigo-600"
+              >
                 Admin Login
               </Link>
             </>
           )}
         </nav>
 
-        {/* user area aligned to far right */}
+        {/* right side */}
         <div className="ml-auto flex items-center gap-4">
           {token && (
             <>
-              <span className="hidden sm:inline font-medium text-gray-700">{name}</span>
+              <span className="hidden sm:inline font-medium text-gray-700">
+                {name || "User"}
+              </span>
 
               <div
                 title={name || "User"}
