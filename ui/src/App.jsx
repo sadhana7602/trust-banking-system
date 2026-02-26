@@ -9,6 +9,7 @@ import CreateAccountPage from "./pages/CreateAccountPage";
 import DepositPage from "./pages/DepositPage";
 import WithdrawPage from "./pages/WithdrawPage";
 import TransferPage from "./pages/TransferPage";
+import TransactionsPage from "./pages/TransactionsPage";
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
           <Route path="/deposit" element={<DepositPage />} />
           <Route path="/withdraw" element={<WithdrawPage />} />
           <Route path="/transfer" element={<TransferPage />} />
+          <Route path="/transactions" element={<TransactionsPage />} />
         </Route>
       </Routes>
     

@@ -87,7 +87,7 @@ public class AccountService {
 
         Account account = getMyAccount(email);
 
-        account.setBalance(account.getBalance().add(amount));
+        account.setBalance(account.getBalance().add(BigDecimal.valueOf(amount)));
 
         transactionRepository.save(Transaction.builder()
                 .toAccount(account.getAccountNumber())
