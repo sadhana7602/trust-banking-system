@@ -29,24 +29,23 @@ export default function SupportPage() {
 
   };
 
-  const openTicket = async (ticket) => {
+  const loadComments = async (ticketId) => {
 
-  setSelectedTicket(ticket);
+  try {
 
+    const res = await authFetch(`/api/support/comments/${ticketId}`);
 
+    const data = await res.json();
 
+    setComments(data);   // MUST be array
 
-  const res = await authFetch(`/api/support/comments/${ticket.id}`);
+  } catch (err) {
 
-  const data = await res.json();
+    console.error("Error loading comments", err);
 
-
-
-
-  setComments(data);
+  }
 
 };
-
   const createTicket = async () => {
 
     await authFetch("/api/support/create", {
@@ -119,27 +118,30 @@ export default function SupportPage() {
 
           <p>Status: {t.status}</p>
 
-        {comments.length === 0 && (
 
-          <p className="text-gray-500">No comments yet</p>
+                {comments.length === 0 ? (
 
-        )}
+          <p>No comments yet</p>
 
-        {comments.map(c => (
+        ) : (
 
-          <div key={c.id} className="mb-2">
+          comments.map((c) => (
 
-            <p className="text-xs text-gray-500">{c.commentedBy}</p>
+            <div key={c.id} className="border p-2 rounded mb-2">
 
-            <div className="bg-white p-2 rounded shadow">
+              <p className="text-sm">{c.commentText}</p>
 
-              {c.commentText}
+              <span className="text-xs text-gray-500">
+
+                {c.commentedBy} • {new Date(c.createdAt).toLocaleString()}
+
+              </span>
 
             </div>
 
-          </div>
+          ))
 
-        ))}
+        )}
 
         </div>
 
