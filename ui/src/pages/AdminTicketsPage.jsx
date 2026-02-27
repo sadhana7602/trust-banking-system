@@ -118,7 +118,11 @@ export default function AdminTicketsPage() {
 
             </p>
 
+          <p className="text-sm text-gray-600">
 
+              Description: {t.description}
+
+            </p>
             <p>Status: {t.status}</p>
 
             <div className="flex gap-2 mt-2">
