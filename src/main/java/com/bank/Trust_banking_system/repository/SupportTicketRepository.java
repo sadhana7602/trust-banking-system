@@ -6,5 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface SupportTicketRepository extends JpaRepository<SupportTicket, Long> {
+
+    // return tickets for a given user id (add if missing)
     List<SupportTicket> findByUserId(Long userId);
 }
