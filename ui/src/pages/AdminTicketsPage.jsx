@@ -60,15 +60,19 @@ export default function AdminTicketsPage() {
 
   });
 
-  setNewComment(""); // clear input
+  // clear input
 
-  // reload comments
+  setNewComment("");
 
-  const res = await authFetch(`/api/support/comments/${selectedTicket.id}`);
+  // reload tickets list
 
-  const data = await res.json();
+  await loadTickets();
 
-  setComments(data);
+  // 🔴 CLOSE COMMENT PANEL
+
+  setSelectedTicket(null);
+
+  setComments([]);
 
 };
 

@@ -124,9 +124,9 @@ public class SupportController {
 
     @GetMapping("/comments/{ticketId}")
 
-    public ResponseEntity<List<TicketComment>> getComments(@PathVariable Long ticketId) {
+    public List<TicketComment> getComments(@PathVariable Long ticketId) {
 
-        return ResponseEntity.ok(supportService.getComments(ticketId));
+        return supportService.getComments(ticketId);
 
     }
 
