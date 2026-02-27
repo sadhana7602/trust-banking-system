@@ -46,10 +46,18 @@ public class SupportService {
 
         SupportTicket saved = ticketRepo.save(ticket);
 
+        //  MAIL TO USER
+        String body = "Hello " + user.getFullName() + ",\n\n"
+                + "Your support ticket has been created successfully.\n"
+                + "Ticket Subject: " + saved.getSubject() + "\n"
+                + "Status: OPEN\n\n"
+                + "Our team will get back to you soon.\n\n"
+                + "Regards,\nTrust Banking Support";
+
         emailService.sendMail(
-                "New Support Ticket Created",
-                "Ticket: " + saved.getSubject(),
-                "Ticket registered Successfully"
+                user.getEmail(),
+                "Support Ticket Created",
+                body
         );
 
         return saved;
@@ -71,11 +79,36 @@ public class SupportService {
         ticket.setStatus(status);
         SupportTicket updated = ticketRepo.save(ticket);
 
+        User user = ticket.getUser();
+
+        // 📧 MAIL WHEN STATUS UPDATED
+        String body = "Hello " + user.getFullName() + ",\n\n"
+                + "Your support ticket status has been updated.\n"
+                + "Ticket Subject: " + ticket.getSubject() + "\n"
+                + "New Status: " + status + "\n\n"
+                + "Regards,\nTrust Banking Support";
+
         emailService.sendMail(
+                user.getEmail(),
                 "Ticket Status Updated",
-                "Ticket " + ticketId + " status changed to " + status,
-                "Status has been updated for yout Ticket"
+                body
         );
+
+        // 📧 EXTRA MAIL IF RESOLVED
+        if ("RESOLVED".equalsIgnoreCase(status) || "CLOSED".equalsIgnoreCase(status)) {
+
+            String closeBody = "Hello " + user.getFullName() + ",\n\n"
+                    + "Your support ticket has been resolved successfully.\n"
+                    + "If you have any further questions, feel free to contact us.\n\n"
+                    + "Thank you for banking with us.\n\n"
+                    + "Regards,\nTrust Banking Support";
+
+            emailService.sendMail(
+                    user.getEmail(),
+                    "Ticket Closed",
+                    closeBody
+            );
+        }
 
         return updated;
     }
@@ -92,7 +125,23 @@ public class SupportService {
                 .ticket(ticket)
                 .build();
 
-        return commentRepo.save(comment);
+        TicketComment saved = commentRepo.save(comment);
+
+        // 📧 MAIL USER ABOUT NEW COMMENT
+        User user = ticket.getUser();
+
+        String body = "Hello " + user.getFullName() + ",\n\n"
+                + "There is a new update on your support ticket.\n"
+                + "Comment: " + saved.getCommentText() + "\n\n"
+                + "Regards,\nTrust Banking Support";
+
+        emailService.sendMail(
+                user.getEmail(),
+                "New Comment on Your Ticket",
+                body
+        );
+
+        return saved;
     }
 
     public List<TicketComment> getComments(Long ticketId) {

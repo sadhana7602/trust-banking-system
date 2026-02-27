@@ -15,6 +15,8 @@ import AdminUsersPage from "./pages/AdminUsersPage";
 import AdminAccountsPage from "./pages/AdminAccountsPage";
 import AdminTransactionsPage from "./pages/AdminTransactionsPage";
 import AdminTicketsPage from "./pages/AdminTicketsPage";
+import SupportPage from "./pages/SupportPage";
+
 
 function App() {
   return (
@@ -36,6 +38,7 @@ function App() {
           <Route path="/admin/accounts" element={<AdminAccountsPage />} />
           <Route path="/admin/transactions" element={<AdminTransactionsPage />} />
           <Route path="/admin/tickets" element={<AdminTicketsPage />} />
+          <Route path="/support" element={<SupportPage />} />
         </Route>
       </Routes>
     
