@@ -40,6 +40,11 @@ export default function AdminTicketsPage() {
 
   };
 
+  const closePanel = () => {
+    setSelectedTicket(null);
+    setComments([]);
+  };
+
   const addComment = async () => {
 
   if (!newComment.trim()) return;
@@ -68,12 +73,15 @@ export default function AdminTicketsPage() {
 
   await loadTickets();
 
-  // 🔴 CLOSE COMMENT PANEL
+  // refresh comments for the currently selected ticket so the new comment appears
+  if (selectedTicket) {
+    const res = await authFetch(`/api/support/comments/${selectedTicket.id}`);
+    const data = await res.json();
+    setComments(data);
+  }
 
-  setSelectedTicket(null);
-
-  setComments([]);
-
+  // keep the comment panel open after submitting so admin can continue
+  // (do not reset selectedTicket or comments)
 };
 
   const updateStatus = async (id, status) => {
@@ -127,20 +135,16 @@ export default function AdminTicketsPage() {
 
             <div className="flex gap-2 mt-2">
 
-              <button onClick={() => updateStatus(t.id, "IN_PROGRESS")}
-
-                      className="bg-yellow-500 text-white px-2 py-1">
-
+              <button
+                    onClick={e => { e.stopPropagation(); updateStatus(t.id, "IN_PROGRESS"); }}
+                    className="bg-yellow-500 text-white px-2 py-1">
                 In Progress
-
               </button>
 
-              <button onClick={() => updateStatus(t.id, "RESOLVED")}
-
-                      className="bg-green-600 text-white px-2 py-1">
-
+              <button
+                    onClick={e => { e.stopPropagation(); updateStatus(t.id, "RESOLVED"); }}
+                    className="bg-green-600 text-white px-2 py-1">
                 Resolve
-
               </button>
 
             </div>
@@ -155,7 +159,19 @@ export default function AdminTicketsPage() {
 
       {selectedTicket && (
 
-        <div className="w-1/2 bg-gray-50 p-4 rounded shadow">
+        <div className="w-1/2 bg-gray-50 p-4 rounded shadow relative">
+
+          {/* close panel button */}
+          <button
+            onClick={() => {
+              setSelectedTicket(null);
+              setComments([]);
+            }}
+            className="absolute top-2 right-2 text-gray-500 hover:text-gray-800"
+            aria-label="Close comments panel"
+          >
+            ✕
+          </button>
 
           <h3 className="font-semibold mb-2">
 
